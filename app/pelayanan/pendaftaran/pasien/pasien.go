@@ -14,17 +14,18 @@ import (
 
 // Pasien is
 type Pasien struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	NoRM         int                `bson:"no_rm,omitempty"`
-	NIK          int                `bson:"nik,omitempty"`
-	Name         string             `bson:"name,omitempty"`
-	DOB          string             `bson:"dob,omitempty"`
-	POB          string             `bson:"pob,omitempty"`
-	Age          int                `bson:"age,omitempty"`
-	JenisKelamin string             `bson:"jenis_kelamin,omitempty"`
-	GolDarah     string             `bson:"gol_darah,omitempty"`
-	Alamat       []Alamat
-	CreatedAt    primitive.DateTime `bson:"createdat,omitempty"`
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
+	NoRM          int                `bson:"no_rm,omitempty"`
+	NIK           int                `bson:"nik,omitempty"`
+	Name          string             `bson:"name,omitempty"`
+	DOB           string             `bson:"dob,omitempty"`
+	POB           string             `bson:"pob,omitempty"`
+	Age           int                `bson:"age,omitempty"`
+	Jenis_Kelamin string             `bson:"jenis_kelamin,omitempty"`
+	GolDarah      string             `bson:"gol_darah,omitempty"`
+	Alamat        []Alamat           `bson:"alamat,omitempty"`
+	Rekam_Medis   []RekamMedis       `bson:"rekam_medis,omitempty"`
+	CreatedAt     primitive.DateTime `bson:"createdat,omitempty"`
 }
 
 type Alamat struct {
@@ -37,6 +38,9 @@ type Alamat struct {
 	Kabupaten string             `bson:"kabupaten,omitempty"`
 	Provinsi  string             `bson:"provinsi,omitempty"`
 	CreatedAt primitive.DateTime `bson:"createdat,omitempty"`
+}
+
+type RekamMedis struct {
 }
 
 // Index is
@@ -124,7 +128,7 @@ func Update(res http.ResponseWriter, req *http.Request) {
 			{Key: "dob", Value: pasien.DOB},
 			{Key: "pob", Value: pasien.POB},
 			{Key: "age", Value: pasien.Age},
-			{Key: "jenis_kelamin", Value: pasien.JenisKelamin},
+			{Key: "jenis_kelamin", Value: pasien.Jenis_Kelamin},
 			{Key: "gol_darah", Value: pasien.GolDarah},
 			{Key: "alamat", Value: pasien.Alamat},
 		}}}
@@ -148,5 +152,25 @@ func Destroy(res http.ResponseWriter, req *http.Request) {
 
 	db.Collection("pasien").FindOneAndDelete(context.Background(), Pasien{ID: id})
 	json.NewEncoder(res).Encode(pasien)
+}
 
+func GetCountPasien(res http.ResponseWriter, req *http.Request) {
+	db, err := db.MongoDB()
+
+	var pasien []Pasien
+
+	query, err := db.Collection("pasien").Find(context.Background(), bson.M{})
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	defer query.Close(context.Background())
+
+	for query.Next(context.Background()) {
+		var data Pasien
+		query.Decode(&data)
+		pasien = append(pasien, data)
+	}
+
+	json.NewEncoder(res).Encode(len(pasien))
 }
