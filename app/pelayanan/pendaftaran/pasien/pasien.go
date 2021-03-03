@@ -17,7 +17,7 @@ type Pasien struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	NoRM          int                `bson:"no_rm,omitempty"`
 	NIK           int                `bson:"nik,omitempty"`
-	Name          string             `bson:"name,omitempty"`
+	Nama          string             `bson:"nama,omitempty"`
 	DOB           string             `bson:"dob,omitempty"`
 	POB           string             `bson:"pob,omitempty"`
 	Age           int                `bson:"age,omitempty"`
@@ -124,7 +124,7 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	id, _ := primitive.ObjectIDFromHex(params["id"])
 	data := bson.D{
 		{"$set", bson.D{
-			{Key: "name", Value: pasien.Name},
+			{Key: "name", Value: pasien.Nama},
 			{Key: "dob", Value: pasien.DOB},
 			{Key: "pob", Value: pasien.POB},
 			{Key: "age", Value: pasien.Age},

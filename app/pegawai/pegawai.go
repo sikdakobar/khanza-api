@@ -16,6 +16,14 @@ import (
 
 // Pegawai is
 type Pegawai struct {
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
+	Nama          string             `bson:"nama,omitempty"`
+	Jabatan       string             `bson:"jabatan,omitempty"`
+	Pendidikan    string             `bson:"pendidikan,omitempty"`
+	Status        string             `bson:"status,omitempty"`
+	Jenis_Kelamin string             `bson:"jenis_kelamin,omitempty"`
+	POB           string             `bson:"pob,omitempty"`
+	DOB           string             `bson:"dob,omitempty"`
 }
 
 // Index is
@@ -62,30 +70,15 @@ func Show(res http.ResponseWriter, req *http.Request) {
 func Store(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-type", "application/json")
 
-	// db, err := db.MongoDB()
+	db, err := db.MongoDB()
 
 	var pegawai Pegawai
 	json.NewDecoder(req.Body).Decode(&pegawai)
-	// data := bson.D{
-	// 	{Key: "no_rm", Value: pegawai.NoRM},
-	// 	{Key: "name", Value: pegawai.Name},
-	// 	{Key: "dob", Value: pegawai.DOB},
-	// 	{Key: "pob", Value: pegawai.POB},
-	// 	{Key: "age", Value: pegawai.Age},
-	// 	{Key: "jenis_kelamin", Value: pegawai.JenisKelamin},
-	// 	{Key: "gol_darah", Value: pegawai.GolDarah},
-	// 	{Key: "createdat", Value: time.Now()},
-	// 	{Key: "alamat", Value: pegawai.Alamat},
-	// 	{Key: "diagnosa", Value: pegawai.Diagnosa},
-	// 	{Key: "pemeriksaan", Value: pegawai.Pemeriksaan},
-	// 	{Key: "pengobatan", Value: pegawai.Pengobatan},
-	// 	{Key: "riwayat", Value: pegawai.Riwayat},
-	// 	{Key: "tindakan", Value: pegawai.Tindakan}}
 
-	// db.Collection("pegawai").InsertOne(context.Background(), data)
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
+	db.Collection("pegawai").InsertOne(context.Background(), pegawai)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	json.NewEncoder(res).Encode(pegawai)
 }
@@ -93,43 +86,44 @@ func Store(res http.ResponseWriter, req *http.Request) {
 // Update is
 func Update(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-type", "application/json")
-	// db, err := db.MongoDB()
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	var pegawai Pegawai
 	json.NewDecoder(req.Body).Decode(&pegawai)
-	// params := mux.Vars(req)
-	// id, _ := primitive.ObjectIDFromHex(params["id"])
-	// data := bson.D{
-	// 	{"$set", bson.D{
-	// 		{Key: "name", Value: pegawai.Name},
-	// 		{Key: "dob", Value: pegawai.DOB},
-	// 		{Key: "pob", Value: pegawai.POB},
-	// 		{Key: "age", Value: pegawai.Age},
-	// 		{Key: "jenis_kelamin", Value: pegawai.JenisKelamin},
-	// 		{Key: "gol_darah", Value: pegawai.GolDarah},
-	// 	}}}
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	data := bson.D{
+		{"$set", bson.D{
+			{Key: "nama", Value: pegawai.Nama},
+			{Key: "jabatan", Value: pegawai.Jabatan},
+			{Key: "pendidikan", Value: pegawai.Pendidikan},
+			{Key: "status", Value: pegawai.Status},
+			{Key: "jenis_kelamin", Value: pegawai.Jenis_Kelamin},
+			{Key: "pob", Value: pegawai.POB},
+			{Key: "dob", Value: pegawai.DOB},
+		}}}
 
-	// db.Collection("pegawai").FindOneAndUpdate(context.Background(), Pegawai{ID: id}, data).Decode(&pegawai)
+	db.Collection("pegawai").FindOneAndUpdate(context.Background(), Pegawai{ID: id}, data).Decode(&pegawai)
 	json.NewEncoder(res).Encode(pegawai)
 }
 
 // Destroy is
 func Destroy(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-type", "application/json")
-	// db, err := db.MongoDB()
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
 	var pegawai Pegawai
 
-	// params := mux.Vars(req)
-	// id, _ := primitive.ObjectIDFromHex(params["id"])
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
 
-	// db.Collection("pegawai").FindOneAndDelete(context.Background(), Pegawai{ID: id})
+	db.Collection("pegawai").FindOneAndDelete(context.Background(), Pegawai{ID: id})
 	json.NewEncoder(res).Encode(pegawai)
 
 }
