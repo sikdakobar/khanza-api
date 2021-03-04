@@ -124,13 +124,14 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	id, _ := primitive.ObjectIDFromHex(params["id"])
 	data := bson.D{
 		{"$set", bson.D{
+			{Key: "no_rm", Value: pasien.NoRM},
 			{Key: "name", Value: pasien.Nama},
+			{Key: "nik", Value: pasien.NIK},
 			{Key: "dob", Value: pasien.DOB},
 			{Key: "pob", Value: pasien.POB},
 			{Key: "age", Value: pasien.Age},
 			{Key: "jenis_kelamin", Value: pasien.Jenis_Kelamin},
 			{Key: "gol_darah", Value: pasien.GolDarah},
-			{Key: "alamat", Value: pasien.Alamat},
 		}}}
 
 	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&pasien)

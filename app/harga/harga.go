@@ -16,8 +16,8 @@ import (
 // Harga is
 type Harga struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Name      string             `bson:"name,omitempty"`
-	Cost      float32            `bson:"cost,omitempty"`
+	Nama      string             `bson:"name,omitempty"`
+	Cost      int                `bson:"cost,omitempty"`
 	CreatedAt primitive.DateTime `bson:"createdat,omitempty"`
 }
 
@@ -56,7 +56,7 @@ func Store(res http.ResponseWriter, req *http.Request) {
 	json.NewDecoder(req.Body).Decode(&harga)
 	data := bson.D{
 
-		{Key: "name", Value: harga.Name},
+		{Key: "name", Value: harga.Nama},
 		{Key: "cost", Value: harga.Cost},
 		{Key: "createdat", Value: time.Now()},
 	}
@@ -85,7 +85,7 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	id, _ := primitive.ObjectIDFromHex(params["id"])
 	data := bson.D{
 		{"$set", bson.D{
-			{Key: "name", Value: harga.Name},
+			{Key: "name", Value: harga.Nama},
 			{Key: "cost", Value: harga.Cost},
 		}}}
 

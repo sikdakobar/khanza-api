@@ -13,7 +13,7 @@ import (
 
 type Antrian struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	NoRM      int                `bson:"no_rm,omitempty"`
+	NIK       int                `bson:"nik,omitempty"`
 	Poli      string             `bson:"poli,omitempty"`
 	CreatedAt primitive.DateTime `bson:"createdat,omitempty"`
 }

@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"simpus/app/harga"
 	"simpus/app/keuangan"
 	"simpus/app/pegawai"
 	"simpus/app/pelayanan/pendaftaran/antrian"
@@ -36,6 +37,14 @@ func Init() {
 	r.HandleFunc("/api/pegawai/{id}", pegawai.Show).Methods("GET")
 	r.HandleFunc("/api/pegawai/{id}", pegawai.Update).Methods("PUT")
 	r.HandleFunc("/api/pegawai/{id}", pegawai.Destroy).Methods("DELETE")
+
+	// Harga
+
+	r.HandleFunc("/api/harga", harga.Index).Methods("GET")
+	r.HandleFunc("/api/harga", harga.Store).Methods("POST")
+	// r.HandleFunc("/api/harga/{id}", harga.Show).Methods("GET")
+	r.HandleFunc("/api/harga/{id}", harga.Update).Methods("PUT")
+	r.HandleFunc("/api/harga/{id}", harga.Destroy).Methods("DELETE")
 
 	// Keuangan > COA
 
