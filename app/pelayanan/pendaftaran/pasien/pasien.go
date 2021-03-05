@@ -15,7 +15,6 @@ import (
 // Pasien is
 type Pasien struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty"`
-	NoRM          int                `bson:"no_rm,omitempty"`
 	NIK           int                `bson:"nik,omitempty"`
 	Nama          string             `bson:"nama,omitempty"`
 	DOB           string             `bson:"dob,omitempty"`
@@ -124,7 +123,6 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	id, _ := primitive.ObjectIDFromHex(params["id"])
 	data := bson.D{
 		{"$set", bson.D{
-			{Key: "no_rm", Value: pasien.NoRM},
 			{Key: "name", Value: pasien.Nama},
 			{Key: "nik", Value: pasien.NIK},
 			{Key: "dob", Value: pasien.DOB},
@@ -155,23 +153,45 @@ func Destroy(res http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(res).Encode(pasien)
 }
 
-func GetCountPasien(res http.ResponseWriter, req *http.Request) {
+func AlamatStore(res http.ResponseWriter, req *http.Request) {
+
+}
+
+func AlamatUpdate(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
 	db, err := db.MongoDB()
-
-	var pasien []Pasien
-
-	query, err := db.Collection("pasien").Find(context.Background(), bson.M{})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	defer query.Close(context.Background())
+	var alamat Alamat
+	json.NewDecoder(req.Body).Decode(&alamat)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	data := bson.D{
+		{"$set", bson.D{
+			{Key: "Jalan", Value: alamat.Jalan},
+			{Key: "No", Value: alamat.No},
+			{Key: "RT", Value: alamat.RT},
+			{Key: "RW", Value: alamat.RW},
+			{Key: "Kelurahan", Value: alamat.Kelurahan},
+			{Key: "Kecamatan", Value: alamat.Kecamatan},
+			{Key: "Kabupaten", Value: alamat.Kabupaten},
+			{Key: "Provinsi", Value: alamat.Provinsi},
+		}}}
 
-	for query.Next(context.Background()) {
-		var data Pasien
-		query.Decode(&data)
-		pasien = append(pasien, data)
-	}
+	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&alamat)
+	json.NewEncoder(res).Encode(alamat)
+}
 
-	json.NewEncoder(res).Encode(len(pasien))
+func RekamMedisIndex(res http.ResponseWriter, req *http.Request) {
+
+}
+
+func RekamMedisStore(res http.ResponseWriter, req *http.Request) {
+
+}
+
+func RekamMedisUpdate(res http.ResponseWriter, req *http.Request) {
+
 }

@@ -24,6 +24,10 @@ type Pegawai struct {
 	Jenis_Kelamin string             `bson:"jenis_kelamin,omitempty"`
 	POB           string             `bson:"pob,omitempty"`
 	DOB           string             `bson:"dob,omitempty"`
+	TMT           []TMT              `bson:"tmt,omitempty"`
+}
+
+type TMT struct {
 }
 
 // Index is
@@ -104,6 +108,7 @@ func Update(res http.ResponseWriter, req *http.Request) {
 			{Key: "jenis_kelamin", Value: pegawai.Jenis_Kelamin},
 			{Key: "pob", Value: pegawai.POB},
 			{Key: "dob", Value: pegawai.DOB},
+			{Key: "tmt", Value: pegawai.TMT},
 		}}}
 
 	db.Collection("pegawai").FindOneAndUpdate(context.Background(), Pegawai{ID: id}, data).Decode(&pegawai)
@@ -125,5 +130,9 @@ func Destroy(res http.ResponseWriter, req *http.Request) {
 
 	db.Collection("pegawai").FindOneAndDelete(context.Background(), Pegawai{ID: id})
 	json.NewEncoder(res).Encode(pegawai)
+
+}
+
+func TMTUpdate(res http.ResponseWriter, req *http.Request) {
 
 }

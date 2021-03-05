@@ -23,12 +23,19 @@ func Init() {
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien/{id}", pasien.Show).Methods("GET")
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien/{id}", pasien.Update).Methods("PUT")
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien/{id}", pasien.Destroy).Methods("DELETE")
-	r.HandleFunc("/api/pelayanan/pendaftaran/pasienCount", pasien.GetCountPasien).Methods("GET")
+	r.HandleFunc("/api/pelayanan/pendaftaran/alamatpasien/{id}", pasien.AlamatStore).Methods("POST")
+	r.HandleFunc("/api/pelayanan/pendaftaran/alamatpasien/{id}", pasien.AlamatUpdate).Methods("PUT")
+
+	// Pelayanan > Rekam Medis
+	r.HandleFunc("/api/pelayanan/rekam_medis/{id}", pasien.RekamMedisIndex).Methods("GET")
+	r.HandleFunc("/api/pelayanan/rekam_medis/{id}", pasien.RekamMedisStore).Methods("POST")
+	r.HandleFunc("/api/pelayanan/rekam_medis/{id}", pasien.RekamMedisUpdate).Methods("PUT")
 
 	// Pelayanan > Pendaftaran > Antrian
 
 	r.HandleFunc("/api/pelayanan/pendaftaran/antrian", antrian.Index).Methods("GET")
 	r.HandleFunc("/api/pelayanan/pendaftaran/antrian", antrian.Store).Methods("POST")
+	r.HandleFunc("/api/pelayanan/pendaftaran/antrian/list", antrian.ListAntrian).Methods("GET")
 
 	// Pegawai
 
@@ -37,12 +44,12 @@ func Init() {
 	r.HandleFunc("/api/pegawai/{id}", pegawai.Show).Methods("GET")
 	r.HandleFunc("/api/pegawai/{id}", pegawai.Update).Methods("PUT")
 	r.HandleFunc("/api/pegawai/{id}", pegawai.Destroy).Methods("DELETE")
+	r.HandleFunc("/api/pegawai/{id}", pegawai.TMTUpdate).Methods("PATCH")
 
 	// Harga
 
 	r.HandleFunc("/api/harga", harga.Index).Methods("GET")
 	r.HandleFunc("/api/harga", harga.Store).Methods("POST")
-	// r.HandleFunc("/api/harga/{id}", harga.Show).Methods("GET")
 	r.HandleFunc("/api/harga/{id}", harga.Update).Methods("PUT")
 	r.HandleFunc("/api/harga/{id}", harga.Destroy).Methods("DELETE")
 
