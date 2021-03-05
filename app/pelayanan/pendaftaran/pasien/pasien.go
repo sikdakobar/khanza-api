@@ -154,7 +154,19 @@ func Destroy(res http.ResponseWriter, req *http.Request) {
 }
 
 func AlamatStore(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
+	var alamat Alamat
+	json.NewDecoder(req.Body).Decode(&alamat)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	data := bson.M{"$push": bson.M{"alamat": bson.M{"Jalan": alamat.Jalan, "No": alamat.No, "RT": alamat.RT, "RW": alamat.RW, "Kelurahan": alamat.Kelurahan, "Kecamatan": alamat.Kecamatan, "Kabupaten": alamat.Kabupaten, "Provinsi": alamat.Provinsi}}}
+	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&alamat)
+	json.NewEncoder(res).Encode(alamat)
 }
 
 func AlamatUpdate(res http.ResponseWriter, req *http.Request) {
