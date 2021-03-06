@@ -121,16 +121,15 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	json.NewDecoder(req.Body).Decode(&pasien)
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
-	data := bson.D{
-		{"$set", bson.D{
-			{Key: "name", Value: pasien.Nama},
-			{Key: "nik", Value: pasien.NIK},
-			{Key: "dob", Value: pasien.DOB},
-			{Key: "pob", Value: pasien.POB},
-			{Key: "age", Value: pasien.Age},
-			{Key: "jenis_kelamin", Value: pasien.Jenis_Kelamin},
-			{Key: "gol_darah", Value: pasien.GolDarah},
-		}}}
+	data := bson.M{"$set": bson.M{
+		"name":          pasien.Nama,
+		"nik":           pasien.NIK,
+		"dob":           pasien.DOB,
+		"pob":           pasien.POB,
+		"age":           pasien.Age,
+		"jenis_kelamin": pasien.Jenis_Kelamin,
+		"gol_darah":     pasien.GolDarah,
+	}}
 
 	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&pasien)
 	json.NewEncoder(res).Encode(pasien)
@@ -180,24 +179,35 @@ func AlamatUpdate(res http.ResponseWriter, req *http.Request) {
 	json.NewDecoder(req.Body).Decode(&alamat)
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
-	data := bson.D{
-		{"$set", bson.D{
-			{Key: "Jalan", Value: alamat.Jalan},
-			{Key: "No", Value: alamat.No},
-			{Key: "RT", Value: alamat.RT},
-			{Key: "RW", Value: alamat.RW},
-			{Key: "Kelurahan", Value: alamat.Kelurahan},
-			{Key: "Kecamatan", Value: alamat.Kecamatan},
-			{Key: "Kabupaten", Value: alamat.Kabupaten},
-			{Key: "Provinsi", Value: alamat.Provinsi},
-		}}}
+	data := bson.M{"$set": bson.M{"alamat.1": bson.M{
+		"Jalan":     alamat.Jalan,
+		"No":        alamat.No,
+		"RT":        alamat.RT,
+		"RW":        alamat.RW,
+		"Kelurahan": alamat.Kelurahan,
+		"Kecamatan": alamat.Kecamatan,
+		"Kabupaten": alamat.Kabupaten,
+		"Provinsi":  alamat.Provinsi}},
+	}
 
 	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&alamat)
 	json.NewEncoder(res).Encode(alamat)
 }
 
 func RekamMedisIndex(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
+	var rekam_medis RekamMedis
+	json.NewDecoder(req.Body).Decode(&rekam_medis)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+
+	db.Collection("pasien").FindOne(context.Background(), bson.M{"_id": id}).Decode(&rekam_medis)
+	json.NewEncoder(res).Encode(rekam_medis)
 }
 
 func RekamMedisStore(res http.ResponseWriter, req *http.Request) {
