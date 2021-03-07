@@ -24,7 +24,7 @@ func Init() {
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien/{id}", pasien.Update).Methods("PUT")
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien/{id}", pasien.Destroy).Methods("DELETE")
 	r.HandleFunc("/api/pelayanan/pendaftaran/alamatpasien/{id}", pasien.AlamatStore).Methods("POST")
-	r.HandleFunc("/api/pelayanan/pendaftaran/alamatpasien/{id}", pasien.AlamatUpdate).Methods("PUT")
+	r.HandleFunc("/api/pelayanan/pendaftaran/alamatpasien/{id}/{index}", pasien.AlamatUpdate).Methods("PUT")
 
 	// Pelayanan > Rekam Medis
 	r.HandleFunc("/api/pelayanan/rekam_medis/{id}", pasien.RekamMedisIndex).Methods("GET")
