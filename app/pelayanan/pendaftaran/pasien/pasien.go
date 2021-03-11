@@ -188,7 +188,8 @@ func AlamatUpdate(res http.ResponseWriter, req *http.Request) {
 		"Kelurahan": alamat.Kelurahan,
 		"Kecamatan": alamat.Kecamatan,
 		"Kabupaten": alamat.Kabupaten,
-		"Provinsi":  alamat.Provinsi}},
+		"Provinsi":  alamat.Provinsi,
+	}},
 	}
 
 	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&alamat)

@@ -83,11 +83,10 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	json.NewDecoder(req.Body).Decode(&harga)
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
-	data := bson.D{
-		{"$set", bson.D{
-			{Key: "name", Value: harga.Nama},
-			{Key: "cost", Value: harga.Cost},
-		}}}
+	data := bson.M{"$set": bson.M{
+		"name": harga.Nama,
+		"cost": harga.Cost,
+	}}
 
 	db.Collection("harga").FindOneAndUpdate(context.Background(), Harga{ID: id}, data).Decode(&harga)
 	json.NewEncoder(res).Encode(harga)

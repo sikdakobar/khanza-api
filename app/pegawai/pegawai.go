@@ -28,6 +28,8 @@ type Pegawai struct {
 }
 
 type TMT struct {
+	NoSK      string             `bson:"no_sk,omitempty"`
+	CreatedAt primitive.DateTime `bson:"createdat,omitempty"`
 }
 
 // Index is
@@ -99,17 +101,16 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	json.NewDecoder(req.Body).Decode(&pegawai)
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
-	data := bson.D{
-		{"$set", bson.D{
-			{Key: "nama", Value: pegawai.Nama},
-			{Key: "jabatan", Value: pegawai.Jabatan},
-			{Key: "pendidikan", Value: pegawai.Pendidikan},
-			{Key: "status", Value: pegawai.Status},
-			{Key: "jenis_kelamin", Value: pegawai.Jenis_Kelamin},
-			{Key: "pob", Value: pegawai.POB},
-			{Key: "dob", Value: pegawai.DOB},
-			{Key: "tmt", Value: pegawai.TMT},
-		}}}
+	data := bson.M{"$set": bson.M{
+		"nama":          pegawai.Nama,
+		"jabatan":       pegawai.Jabatan,
+		"pendidikan":    pegawai.Pendidikan,
+		"status":        pegawai.Status,
+		"jenis_kelamin": pegawai.Jenis_Kelamin,
+		"pob":           pegawai.POB,
+		"dob":           pegawai.DOB,
+		"tmt":           pegawai.TMT,
+	}}
 
 	db.Collection("pegawai").FindOneAndUpdate(context.Background(), Pegawai{ID: id}, data).Decode(&pegawai)
 	json.NewEncoder(res).Encode(pegawai)

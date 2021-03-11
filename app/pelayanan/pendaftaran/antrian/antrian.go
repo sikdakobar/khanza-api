@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"simpus/db"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -14,6 +13,7 @@ import (
 
 type Antrian struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	No_Urut   int
 	NIK       int                `bson:"nik,omitempty"`
 	Poli      string             `bson:"poli,omitempty"`
 	Date      string             `bson:"date,omitempty"`
@@ -66,7 +66,8 @@ func ListAntrian(res http.ResponseWriter, req *http.Request) {
 
 	var antrian []Antrian
 
-	query, err := db.Collection("antrian").Find(context.Background(), bson.M{"date": time.Now().Format("1900-01-01")})
+	// "date": time.Now().Format("1900-01-01")
+	query, err := db.Collection("antrian").Find(context.Background(), bson.M{"date": "2021-01-01"})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -77,6 +78,10 @@ func ListAntrian(res http.ResponseWriter, req *http.Request) {
 		var data Antrian
 		query.Decode(&data)
 		antrian = append(antrian, data)
+	}
+
+	for i := range antrian {
+		antrian[i].No_Urut = i + 1
 	}
 
 	json.NewEncoder(res).Encode(antrian)

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"simpus/app/harga"
 	"simpus/app/keuangan"
+	"simpus/app/obat"
 	"simpus/app/pegawai"
 	"simpus/app/pelayanan/pendaftaran/antrian"
 	"simpus/app/pelayanan/pendaftaran/pasien"
@@ -52,6 +53,13 @@ func Init() {
 	r.HandleFunc("/api/harga", harga.Store).Methods("POST")
 	r.HandleFunc("/api/harga/{id}", harga.Update).Methods("PUT")
 	r.HandleFunc("/api/harga/{id}", harga.Destroy).Methods("DELETE")
+
+	// Obat
+
+	r.HandleFunc("/api/obat", obat.Index).Methods("GET")
+	r.HandleFunc("/api/obat", obat.Store).Methods("POST")
+	r.HandleFunc("/api/obat/{id}", obat.Update).Methods("PUT")
+	r.HandleFunc("/api/obat/{id}", obat.Destroy).Methods("DELETE")
 
 	// Keuangan > COA
 
