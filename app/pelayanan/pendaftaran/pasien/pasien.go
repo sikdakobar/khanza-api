@@ -39,6 +39,9 @@ type Alamat struct {
 	CreatedAt primitive.DateTime `bson:"createdat,omitempty"`
 }
 
+type Biometrik struct {
+}
+
 type RekamMedis struct {
 }
 

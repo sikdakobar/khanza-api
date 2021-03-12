@@ -15,9 +15,16 @@ import (
 type Obat struct {
 	ID    primitive.ObjectID `bson:"_id,omitempty"`
 	Nama  string             `bson:"nama,omitempty"`
-	Merek string             `bson:"merek,omitempty"`
-	Jenis string             `bson:"jenis,omitempty"`
-	Batch string             `bson:"batch,omitempty"`
+	Batch []string           `bson:"batch,omitempty"`
+}
+
+type Batch struct {
+	Merek      string `bson:"merek,omitempty"`
+	Jenis      string `bson:"jenis,omitempty"`
+	Golongan   string `bson:"golongan,omitempty"`
+	Harga      string `bson:"harga,omitempty"`
+	Supplier   string `bson:"supplier,omitempty"`
+	Date_Entry string `bson:"date_entry,omitempty"`
 }
 
 func Index(res http.ResponseWriter, req *http.Request) {
@@ -71,10 +78,7 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
 	data := bson.M{"$set": bson.M{
-		"name":  obat.Nama,
-		"merek": obat.Merek,
-		"jenis": obat.Jenis,
-		"batch": obat.Batch,
+		"name": obat.Nama,
 	}}
 
 	db.Collection("obat").FindOneAndUpdate(context.Background(), Obat{ID: id}, data).Decode(&obat)
