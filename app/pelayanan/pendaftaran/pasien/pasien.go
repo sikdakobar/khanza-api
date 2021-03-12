@@ -14,17 +14,17 @@ import (
 
 // Pasien is
 type Pasien struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	NoRM         int                `bson:"no_rm,omitempty"`
-	NIK          int                `bson:"nik,omitempty"`
-	Name         string             `bson:"name,omitempty"`
-	DOB          string             `bson:"dob,omitempty"`
-	POB          string             `bson:"pob,omitempty"`
-	Age          int                `bson:"age,omitempty"`
-	JenisKelamin string             `bson:"jenis_kelamin,omitempty"`
-	GolDarah     string             `bson:"gol_darah,omitempty"`
-	Alamat       []Alamat
-	CreatedAt    primitive.DateTime `bson:"createdat,omitempty"`
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
+	NIK           int                `bson:"nik,omitempty"`
+	Nama          string             `bson:"nama,omitempty"`
+	DOB           string             `bson:"dob,omitempty"`
+	POB           string             `bson:"pob,omitempty"`
+	Age           int                `bson:"age,omitempty"`
+	Jenis_Kelamin string             `bson:"jenis_kelamin,omitempty"`
+	GolDarah      string             `bson:"gol_darah,omitempty"`
+	Alamat        []Alamat           `bson:"alamat,omitempty"`
+	Rekam_Medis   []RekamMedis       `bson:"rekam_medis,omitempty"`
+	CreatedAt     primitive.DateTime `bson:"createdat,omitempty"`
 }
 
 type Alamat struct {
@@ -37,6 +37,12 @@ type Alamat struct {
 	Kabupaten string             `bson:"kabupaten,omitempty"`
 	Provinsi  string             `bson:"provinsi,omitempty"`
 	CreatedAt primitive.DateTime `bson:"createdat,omitempty"`
+}
+
+type Biometrik struct {
+}
+
+type RekamMedis struct {
 }
 
 // Index is
@@ -118,16 +124,15 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	json.NewDecoder(req.Body).Decode(&pasien)
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
-	data := bson.D{
-		{"$set", bson.D{
-			{Key: "name", Value: pasien.Name},
-			{Key: "dob", Value: pasien.DOB},
-			{Key: "pob", Value: pasien.POB},
-			{Key: "age", Value: pasien.Age},
-			{Key: "jenis_kelamin", Value: pasien.JenisKelamin},
-			{Key: "gol_darah", Value: pasien.GolDarah},
-			{Key: "alamat", Value: pasien.Alamat},
-		}}}
+	data := bson.M{"$set": bson.M{
+		"name":          pasien.Nama,
+		"nik":           pasien.NIK,
+		"dob":           pasien.DOB,
+		"pob":           pasien.POB,
+		"age":           pasien.Age,
+		"jenis_kelamin": pasien.Jenis_Kelamin,
+		"gol_darah":     pasien.GolDarah,
+	}}
 
 	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&pasien)
 	json.NewEncoder(res).Encode(pasien)
@@ -148,5 +153,72 @@ func Destroy(res http.ResponseWriter, req *http.Request) {
 
 	db.Collection("pasien").FindOneAndDelete(context.Background(), Pasien{ID: id})
 	json.NewEncoder(res).Encode(pasien)
+}
+
+func AlamatStore(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var alamat Alamat
+	json.NewDecoder(req.Body).Decode(&alamat)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	data := bson.M{"$push": bson.M{"alamat": bson.M{"Jalan": alamat.Jalan, "No": alamat.No, "RT": alamat.RT, "RW": alamat.RW, "Kelurahan": alamat.Kelurahan, "Kecamatan": alamat.Kecamatan, "Kabupaten": alamat.Kabupaten, "Provinsi": alamat.Provinsi}}}
+	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&alamat)
+	json.NewEncoder(res).Encode(alamat)
+}
+
+func AlamatUpdate(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var alamat Alamat
+	json.NewDecoder(req.Body).Decode(&alamat)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	index := params["index"]
+	data := bson.M{"$set": bson.M{"alamat" + "." + index: bson.M{
+		"Jalan":     alamat.Jalan,
+		"No":        alamat.No,
+		"RT":        alamat.RT,
+		"RW":        alamat.RW,
+		"Kelurahan": alamat.Kelurahan,
+		"Kecamatan": alamat.Kecamatan,
+		"Kabupaten": alamat.Kabupaten,
+		"Provinsi":  alamat.Provinsi,
+	}},
+	}
+
+	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&alamat)
+	json.NewEncoder(res).Encode(alamat)
+}
+
+func RekamMedisIndex(res http.ResponseWriter, req *http.Request) {
+	// res.Header().Set("Content-type", "application/json")
+	// db, err := db.MongoDB()
+	// if err != nil {
+	// 	log.Fatal(err.Error())
+	// }
+
+	// var rekam_medis RekamMedis
+	// json.NewDecoder(req.Body).Decode(&rekam_medis)
+	// params := mux.Vars(req)
+	// id, _ := primitive.ObjectIDFromHex(params["id"])
+
+	// db.Collection("pasien").FindOne(context.Background(), bson.M{"_id": id}).Decode(&rekam_medis)
+	// json.NewEncoder(res).Encode(rekam_medis)
+}
+
+func RekamMedisStore(res http.ResponseWriter, req *http.Request) {
+
+}
+
+func RekamMedisUpdate(res http.ResponseWriter, req *http.Request) {
 
 }
