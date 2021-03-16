@@ -18,7 +18,6 @@ func Init() {
 	r := mux.NewRouter()
 
 	// Pelayanan > Pendaftaran > Pasien
-
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien", pasien.Index).Methods("GET")
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien", pasien.Store).Methods("POST")
 	r.HandleFunc("/api/pelayanan/pendaftaran/pasien/{id}", pasien.Show).Methods("GET")
@@ -28,18 +27,15 @@ func Init() {
 	r.HandleFunc("/api/pelayanan/pendaftaran/alamatpasien/{id}/{index}", pasien.AlamatUpdate).Methods("PUT")
 
 	// Pelayanan > Rekam Medis
-	r.HandleFunc("/api/pelayanan/rekam_medis/{id}", pasien.RekamMedisIndex).Methods("GET")
-	r.HandleFunc("/api/pelayanan/rekam_medis/{id}", pasien.RekamMedisStore).Methods("POST")
-	r.HandleFunc("/api/pelayanan/rekam_medis/{id}/{index}", pasien.RekamMedisUpdate).Methods("PUT")
+	r.HandleFunc("/api/pelayanan/pasien/{id}/tindakan", pasien.RekamMedisStore).Methods("POST")
+	r.HandleFunc("/api/pelayanan/pasien/{id}/tindakan/{index}", pasien.RekamMedisUpdate).Methods("PUT")
 
 	// Pelayanan > Pendaftaran > Antrian
-
 	r.HandleFunc("/api/pelayanan/pendaftaran/antrian", antrian.Index).Methods("GET")
 	r.HandleFunc("/api/pelayanan/pendaftaran/antrian", antrian.Store).Methods("POST")
 	r.HandleFunc("/api/pelayanan/pendaftaran/antrian/list", antrian.ListAntrian).Methods("GET")
 
 	// Pegawai
-
 	r.HandleFunc("/api/pegawai", pegawai.Index).Methods("GET")
 	r.HandleFunc("/api/pegawai", pegawai.Store).Methods("POST")
 	r.HandleFunc("/api/pegawai/{id}", pegawai.Show).Methods("GET")
@@ -48,21 +44,18 @@ func Init() {
 	r.HandleFunc("/api/pegawai/{id}", pegawai.TMTUpdate).Methods("PATCH")
 
 	// Harga
-
 	r.HandleFunc("/api/harga", harga.Index).Methods("GET")
 	r.HandleFunc("/api/harga", harga.Store).Methods("POST")
 	r.HandleFunc("/api/harga/{id}", harga.Update).Methods("PUT")
 	r.HandleFunc("/api/harga/{id}", harga.Destroy).Methods("DELETE")
 
 	// Obat
-
 	r.HandleFunc("/api/obat", obat.Index).Methods("GET")
 	r.HandleFunc("/api/obat", obat.Store).Methods("POST")
 	r.HandleFunc("/api/obat/{id}", obat.Update).Methods("PUT")
 	r.HandleFunc("/api/obat/{id}", obat.Destroy).Methods("DELETE")
 
 	// Keuangan > COA
-
 	r.HandleFunc("/api/coa", keuangan.IndexCOA).Methods("GET")
 	r.HandleFunc("/api/coa", keuangan.StoreCOA).Methods("POST")
 	r.HandleFunc("/api/coa/{id}", keuangan.ShowCOA).Methods("GET")
