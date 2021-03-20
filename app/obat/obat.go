@@ -13,17 +13,20 @@ import (
 )
 
 type Obat struct {
-	ID    primitive.ObjectID `bson:"_id,omitempty"`
-	Nama  string             `bson:"nama,omitempty"`
-	Batch []string           `bson:"batch,omitempty"`
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Nama     string             `bson:"nama,omitempty"`
+	Kategori string             `bson:"kategori,omitempty"`
+	Golongan string             `bson:"golongan,omitempty"`
+	Batch    []Batch            `bson:"batch_obat,omitempty"`
 }
 
 type Batch struct {
 	Merek      string `bson:"merek,omitempty"`
-	Jenis      string `bson:"jenis,omitempty"`
-	Golongan   string `bson:"golongan,omitempty"`
+	Dosis      string `bson:"dosis,omitempty"`
 	Harga      string `bson:"harga,omitempty"`
+	Bentuk     string `bson:"bentuk,omitempty"`
 	Supplier   string `bson:"supplier,omitempty"`
+	Expired    string `bson:"expired,omitempty"`
 	Date_Entry string `bson:"date_entry,omitempty"`
 }
 
@@ -78,7 +81,9 @@ func Update(res http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
 	data := bson.M{"$set": bson.M{
-		"name": obat.Nama,
+		"nama":     obat.Nama,
+		"kategori": obat.Kategori,
+		"golongan": obat.Golongan,
 	}}
 
 	db.Collection("obat").FindOneAndUpdate(context.Background(), Obat{ID: id}, data).Decode(&obat)
@@ -99,4 +104,68 @@ func Destroy(res http.ResponseWriter, req *http.Request) {
 
 	db.Collection("obat").FindOneAndDelete(context.Background(), Obat{ID: id})
 	json.NewEncoder(res).Encode(obat)
+}
+
+func BatchObatStore(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var batch_obat Batch
+	json.NewDecoder(req.Body).Decode(&batch_obat)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	data := bson.M{"$push": bson.M{"batch_obat": bson.M{
+		"Merek":      batch_obat.Merek,
+		"Dosis":      batch_obat.Dosis,
+		"Harga":      batch_obat.Harga,
+		"Bentuk":     batch_obat.Bentuk,
+		"Supplier":   batch_obat.Supplier,
+		"Expired":    batch_obat.Expired,
+		"Date_Entry": batch_obat.Date_Entry}}}
+	db.Collection("obat").FindOneAndUpdate(context.Background(), Obat{ID: id}, data).Decode(&batch_obat)
+	json.NewEncoder(res).Encode(batch_obat)
+}
+
+func BatchObatUpdate(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var batch_obat Batch
+	json.NewDecoder(req.Body).Decode(&batch_obat)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	index := params["index"]
+	data := bson.M{"$push": bson.M{"batch_obat" + "." + index: bson.M{
+		"Merek":      batch_obat.Merek,
+		"Dosis":      batch_obat.Dosis,
+		"Harga":      batch_obat.Harga,
+		"Bentuk":     batch_obat.Bentuk,
+		"Supplier":   batch_obat.Supplier,
+		"Expired":    batch_obat.Expired,
+		"Date_Entry": batch_obat.Date_Entry}}}
+	db.Collection("obat").FindOneAndUpdate(context.Background(), Obat{ID: id}, data).Decode(&batch_obat)
+	json.NewEncoder(res).Encode(batch_obat)
+}
+
+func BatchObatDestroy(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-type", "application/json")
+	db, err := db.MongoDB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var batch_obat Batch
+	json.NewDecoder(req.Body).Decode(&batch_obat)
+	params := mux.Vars(req)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
+	index := params["index"]
+	data := bson.M{"$pop": bson.M{"batch_obat" + "." + index: bson.M{}}}
+	db.Collection("obat").FindOneAndUpdate(context.Background(), Obat{ID: id}, data).Decode(&batch_obat)
+	json.NewEncoder(res).Encode(batch_obat)
 }

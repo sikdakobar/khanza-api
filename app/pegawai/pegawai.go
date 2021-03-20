@@ -134,6 +134,10 @@ func Destroy(res http.ResponseWriter, req *http.Request) {
 
 }
 
+func TMTStore(res http.ResponseWriter, req *http.Request) {
+
+}
+
 func TMTUpdate(res http.ResponseWriter, req *http.Request) {
 
 }

@@ -19,7 +19,7 @@ type Pasien struct {
 	NIK           int                `bson:"nik,omitempty"`
 	No_RM         int                `bson:"no_rm,omitempty"`
 	Nama          string             `bson:"nama,omitempty"`
-	DOB           string             `bson:"dob,omitempty"`
+	DOB           primitive.DateTime `bson:"dob,omitempty"`
 	POB           string             `bson:"pob,omitempty"`
 	Jenis_Kelamin string             `bson:"jenis_kelamin,omitempty"`
 	GolDarah      string             `bson:"gol_darah,omitempty"`
@@ -37,7 +37,7 @@ type Alamat struct {
 	No             uint8              `bson:"no,omitempty"`
 	RT             uint8              `bson:"rt,omitempty"`
 	RW             uint8              `bson:"rw,omitempty"`
-	Desa_Kelurahan string             `bson:"kelurahan_desa,omitempty"`
+	Desa_Kelurahan string             `bson:"desa_kelurahan,omitempty"`
 	Kecamatan      string             `bson:"kecamatan,omitempty"`
 	Kabupaten      string             `bson:"kabupaten,omitempty"`
 	Provinsi       string             `bson:"provinsi,omitempty"`
@@ -84,7 +84,7 @@ func Index(res http.ResponseWriter, req *http.Request) {
 	}
 
 	for i := range pasien {
-		pasien[i].Age = time.Now().Year()
+		pasien[i].Age = time.Now().Year() - pasien[i].Age
 	}
 
 	json.NewEncoder(res).Encode(pasien)
@@ -105,7 +105,7 @@ func Show(res http.ResponseWriter, req *http.Request) {
 	var pasien Pasien
 	db.Collection("pasien").FindOne(context.Background(), bson.M{"_id": id}).Decode(&pasien)
 
-	pasien.Age = time.Now().Year()
+	pasien.Age = time.Now().Year() - pasien.Age
 
 	json.NewEncoder(res).Encode(pasien)
 }
@@ -180,7 +180,7 @@ func AlamatStore(res http.ResponseWriter, req *http.Request) {
 	json.NewDecoder(req.Body).Decode(&alamat)
 	params := mux.Vars(req)
 	id, _ := primitive.ObjectIDFromHex(params["id"])
-	data := bson.M{"$push": bson.M{"alamat": bson.M{"Jalan": alamat.Jalan, "No": alamat.No, "RT": alamat.RT, "RW": alamat.RW, "Kelurahan_desa": alamat.Desa_Kelurahan, "Kecamatan": alamat.Kecamatan, "Kabupaten": alamat.Kabupaten, "Provinsi": alamat.Provinsi}}}
+	data := bson.M{"$push": bson.M{"alamat": bson.M{"Jalan": alamat.Jalan, "No": alamat.No, "RT": alamat.RT, "RW": alamat.RW, "Desa_Kelurahan": alamat.Desa_Kelurahan, "Kecamatan": alamat.Kecamatan, "Kabupaten": alamat.Kabupaten, "Provinsi": alamat.Provinsi, "CreatedAt": alamat.CreatedAt}}}
 	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&alamat)
 	json.NewEncoder(res).Encode(alamat)
 }
@@ -198,14 +198,14 @@ func AlamatUpdate(res http.ResponseWriter, req *http.Request) {
 	id, _ := primitive.ObjectIDFromHex(params["id"])
 	index := params["index"]
 	data := bson.M{"$set": bson.M{"alamat" + "." + index: bson.M{
-		"Jalan":     alamat.Jalan,
-		"No":        alamat.No,
-		"RT":        alamat.RT,
-		"RW":        alamat.RW,
-		"Kelurahan": alamat.Desa_Kelurahan,
-		"Kecamatan": alamat.Kecamatan,
-		"Kabupaten": alamat.Kabupaten,
-		"Provinsi":  alamat.Provinsi,
+		"Jalan":          alamat.Jalan,
+		"No":             alamat.No,
+		"RT":             alamat.RT,
+		"RW":             alamat.RW,
+		"Desa_Kelurahan": alamat.Desa_Kelurahan,
+		"Kecamatan":      alamat.Kecamatan,
+		"Kabupaten":      alamat.Kabupaten,
+		"Provinsi":       alamat.Provinsi,
 	}},
 	}
 
@@ -231,7 +231,8 @@ func RekamMedisStore(res http.ResponseWriter, req *http.Request) {
 		"Keluhan":           rekam_medis.Keluhan,
 		"Pemeriksaan_Fisik": rekam_medis.Pemeriksaan_Fisik,
 		"Pemeriksaan_Lab":   rekam_medis.Pemeriksaan_Lab,
-		"Perawatan":         rekam_medis.Perawatan}}}
+		"Perawatan":         rekam_medis.Perawatan,
+		"CreatedAt":         rekam_medis.CreatedAt}}}
 	db.Collection("pasien").FindOneAndUpdate(context.Background(), Pasien{ID: id}, data).Decode(&rekam_medis)
 	json.NewEncoder(res).Encode(rekam_medis)
 }

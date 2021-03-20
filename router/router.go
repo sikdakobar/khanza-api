@@ -54,6 +54,9 @@ func Init() {
 	r.HandleFunc("/api/obat", obat.Store).Methods("POST")
 	r.HandleFunc("/api/obat/{id}", obat.Update).Methods("PUT")
 	r.HandleFunc("/api/obat/{id}", obat.Destroy).Methods("DELETE")
+	r.HandleFunc("/api/obat/{id}/batch", obat.BatchObatStore).Methods("POST")
+	r.HandleFunc("/api/obat/{id}/{index}/batch", obat.BatchObatUpdate).Methods("PUT")
+	r.HandleFunc("/api/obat/{id}/{index}/batch", obat.BatchObatDestroy).Methods("DELETE")
 
 	// Keuangan > COA
 	r.HandleFunc("/api/coa", keuangan.IndexCOA).Methods("GET")
