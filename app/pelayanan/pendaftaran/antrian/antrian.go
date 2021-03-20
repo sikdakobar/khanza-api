@@ -67,7 +67,7 @@ func ListAntrian(res http.ResponseWriter, req *http.Request) {
 	var antrian []Antrian
 
 	// "date": time.Now().Format("1900-01-01")
-	query, err := db.Collection("antrian").Find(context.Background(), bson.M{"date": "2021-01-01"})
+	query, err := db.Collection("antrian").Find(context.Background(), bson.M{"date": "2021-03-11"})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
